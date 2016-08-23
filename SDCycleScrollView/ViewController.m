@@ -10,6 +10,8 @@
  
  *********************************************************************************
  *
+ * 🌟🌟🌟 新建SDCycleScrollView交流QQ群：185534916 🌟🌟🌟
+ *
  * 在您使用此自动轮播库的过程中如果出现bug请及时以以下任意一种方式联系我们，我们会及时修复bug并
  * 帮您解决问题。
  * 新浪微博:GSD_iOS
@@ -37,18 +39,26 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"轮播Demo";
+    
     self.view.backgroundColor = [UIColor colorWithRed:0.98 green:0.98 blue:0.98 alpha:0.99];
     UIImageView *backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"005.jpg"]];
     backgroundView.frame = self.view.bounds;
     [self.view addSubview:backgroundView];
     
+    UIScrollView *demoContainerView = [[UIScrollView alloc] initWithFrame:self.view.frame];
+    demoContainerView.contentSize = CGSizeMake(self.view.frame.size.width, 1200);
+    [self.view addSubview:demoContainerView];
+    
+    self.title = @"轮播Demo";
+
+    
     // 情景一：采用本地图片实现
-    NSArray *images = @[[UIImage imageNamed:@"h1.jpg"],
-                        [UIImage imageNamed:@"h2.jpg"],
-                        [UIImage imageNamed:@"h3.jpg"],
-                        [UIImage imageNamed:@"h4.jpg"]
-                        ];
+    NSArray *imageNames = @[@"h1.jpg",
+                            @"h2.jpg",
+                            @"h3.jpg",
+                            @"h4.jpg",
+                            @"h7" // 本地图片请填写全名
+                            ];
     
     // 情景二：采用网络图片实现
     NSArray *imagesURLStrings = @[
@@ -58,28 +68,29 @@
                            ];
     
     // 情景三：图片配文字
-    NSArray *titles = @[@"感谢您的支持，如果下载的",
+    NSArray *titles = @[@"新建交流QQ群：185534916 ",
+                        @"感谢您的支持，如果下载的",
                         @"如果代码在使用过程中出现问题",
-                        @"您可以发邮件到gsdios@126.com",
-                        @"感谢您的支持"
+                        @"您可以发邮件到gsdios@126.com"
                         ];
-    
-    
-    
     
     CGFloat w = self.view.bounds.size.width;
     
-    // 本地加载 --- 创建不带标题的图片轮播器
-    SDCycleScrollView *cycleScrollView = [SDCycleScrollView cycleScrollViewWithFrame:CGRectMake(0, 64, w, 180) imagesGroup:images];
+    
 
-    cycleScrollView.infiniteLoop = YES;
+// >>>>>>>>>>>>>>>>>>>>>>>>> demo轮播图1 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    
+    // 本地加载 --- 创建不带标题的图片轮播器
+    SDCycleScrollView *cycleScrollView = [SDCycleScrollView cycleScrollViewWithFrame:CGRectMake(0, 64, w, 180) shouldInfiniteLoop:YES imageNamesGroup:imageNames];
     cycleScrollView.delegate = self;
     cycleScrollView.pageControlStyle = SDCycleScrollViewPageContolStyleAnimated;
-    [self.view addSubview:cycleScrollView];
+    [demoContainerView addSubview:cycleScrollView];
+    cycleScrollView.scrollDirection = UICollectionViewScrollDirectionVertical;
     //         --- 轮播时间间隔，默认1.0秒，可自定义
     //cycleScrollView.autoScrollTimeInterval = 4.0;
     
     
+// >>>>>>>>>>>>>>>>>>>>>>>>> demo轮播图2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     
     // 网络加载 --- 创建带标题的图片轮播器
     SDCycleScrollView *cycleScrollView2 = [SDCycleScrollView cycleScrollViewWithFrame:CGRectMake(0, 280, w, 180) delegate:self placeholderImage:[UIImage imageNamed:@"placeholder"]];
@@ -87,12 +98,57 @@
     cycleScrollView2.pageControlAliment = SDCycleScrollViewPageContolAlimentRight;
     cycleScrollView2.titlesGroup = titles;
     cycleScrollView2.currentPageDotColor = [UIColor whiteColor]; // 自定义分页控件小圆标颜色
-    [self.view addSubview:cycleScrollView2];
+    [demoContainerView addSubview:cycleScrollView2];
     
     //         --- 模拟加载延迟
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         cycleScrollView2.imageURLStringsGroup = imagesURLStrings;
     });
+    
+    /*
+     block监听点击方式
+     
+     cycleScrollView2.clickItemOperationBlock = ^(NSInteger index) {
+        NSLog(@">>>>>  %ld", (long)index);
+     };
+     
+     */
+    
+    
+// >>>>>>>>>>>>>>>>>>>>>>>>> demo轮播图3 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    
+    // 网络加载 --- 创建自定义图片的pageControlDot的图片轮播器
+    SDCycleScrollView *cycleScrollView3 = [SDCycleScrollView cycleScrollViewWithFrame:CGRectMake(0, 500, w, 180) delegate:self placeholderImage:[UIImage imageNamed:@"placeholder"]];
+    cycleScrollView3.currentPageDotImage = [UIImage imageNamed:@"pageControlCurrentDot"];
+    cycleScrollView3.pageDotImage = [UIImage imageNamed:@"pageControlDot"];
+    cycleScrollView3.imageURLStringsGroup = imagesURLStrings;
+    
+    [demoContainerView addSubview:cycleScrollView3];
+    
+// >>>>>>>>>>>>>>>>>>>>>>>>> demo轮播图4 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    
+    // 网络加载 --- 创建只上下滚动展示文字的轮播器
+    // 由于模拟器的渲染问题，如果发现轮播时有一条线不必处理，模拟器放大到100%或者真机调试是不会出现那条线的
+    SDCycleScrollView *cycleScrollView4 = [SDCycleScrollView cycleScrollViewWithFrame:CGRectMake(0, 750, w, 40) delegate:self placeholderImage:nil];
+    cycleScrollView4.scrollDirection = UICollectionViewScrollDirectionVertical;
+    cycleScrollView4.onlyDisplayText = YES;
+    
+    NSMutableArray *titlesArray = [NSMutableArray new];
+    [titlesArray addObject:@"纯文字上下滚动轮播"];
+    [titlesArray addObject:@"纯文字上下滚动轮播 -- demo轮播图4"];
+    [titlesArray addObjectsFromArray:titles];
+    cycleScrollView4.titlesGroup = [titlesArray copy];
+    
+    [demoContainerView addSubview:cycleScrollView4];
+    
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    // 如果你发现你的CycleScrollview会在viewWillAppear时图片卡在中间位置，你可以调用此方法调整图片位置
+//    [你的CycleScrollview adjustWhenControllerViewWillAppera];
 }
 
 
@@ -104,5 +160,16 @@
     
     [self.navigationController pushViewController:[NSClassFromString(@"DemoVCWithXib") new] animated:YES];
 }
+
+
+/*
+ 
+// 滚动到第几张图回调
+- (void)cycleScrollView:(SDCycleScrollView *)cycleScrollView didScrollToIndex:(NSInteger)index
+{
+    NSLog(@">>>>>> 滚动到第%ld张图", (long)index);
+}
+ 
+ */
 
 @end
